@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/EditYJ/ywxapi/context"
+	"github.com/EditYJ/ywxapi/util"
 	"io/ioutil"
-	"ywxapi/context"
-	"ywxapi/util"
 )
 
 type Server struct {
@@ -58,11 +58,11 @@ func (srv *Server) handleRequest() {
 func (srv *Server) getMessage() (interface{}, error) {
 	var rawXMLMsgBytes []byte
 	var err error
-	if srv.isSafeMode{
+	if srv.isSafeMode {
 		// TODO 如果是安全模式，需要书写解密逻辑
-	}else{
+	} else {
 		rawXMLMsgBytes, err = ioutil.ReadAll(srv.Request.Body)
-		if err != nil{
+		if err != nil {
 			return nil, fmt.Errorf("从bofy中解析XML失败，err=%v", err)
 		}
 	}

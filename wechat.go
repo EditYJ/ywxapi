@@ -1,10 +1,10 @@
 package ywxapi
 
 import (
+	"github.com/EditYJ/ywxapi/context"
+	"github.com/EditYJ/ywxapi/log"
+	"github.com/EditYJ/ywxapi/server"
 	"net/http"
-	"ywxapi/context"
-	"ywxapi/log"
-	"ywxapi/server"
 )
 
 type Wechat struct {

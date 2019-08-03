@@ -1,4 +1,4 @@
-module ywxapi
+module github.com/EditYJ/ywxapi
 
 go 1.12
 
