@@ -2,7 +2,6 @@ package ywxapi
 
 import (
 	"github.com/EditYJ/ywxapi/context"
-	"github.com/EditYJ/ywxapi/log"
 	"github.com/EditYJ/ywxapi/server"
 	"net/http"
 )
@@ -21,13 +20,9 @@ type Config struct {
 
 //初始化
 func NewWeChat(cfg *Config) *Wechat {
-	channelLen := int64(10000)
-	adapterName := "console"
-	config := ""
-	logLevel := log.LevelDebug
-	log.InitLogger(channelLen, adapterName, config, logLevel)
-
+	// 创建上下文
 	context := new(context.Context)
+	// 将配置信息输入上下文
 	copyConfigToContext(cfg, context)
 	return &Wechat{context}
 }
@@ -40,6 +35,7 @@ func copyConfigToContext(cfg *Config, ctx *context.Context) {
 	ctx.EncodingAESkey = cfg.EncodingAESKey
 }
 
+// 接受原生的Request和ResponseWriter用于和微信服务器沟通联系，获取返回api服务
 func (wc *Wechat) GetServer(req *http.Request, writer http.ResponseWriter) *server.Server {
 	wc.Context.Request = req
 	wc.Context.Writer = writer
