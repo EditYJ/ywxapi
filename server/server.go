@@ -19,7 +19,9 @@ func NewServer(context *context.Context) *Server {
 	return srv
 }
 
-// 处理微信的请求消息
+// 判断是否请求的确来自微信服务器
+//
+// 返回echostr给服务器表示接入成功
 func (srv *Server) Serve() error {
 	if !srv.validate() {
 		return fmt.Errorf("请求校验失败，该请求可能不是来自微信服务器！")
@@ -41,7 +43,7 @@ func (srv *Server) validate() bool {
 	return signature == util.Signature(srv.Token, timestamp, nonce)
 }
 
-// 处理微信的请求
+// 处理微信的请求判断是否为加密模式
 func (srv *Server) handleRequest() {
 	srv.isSafeMode = false
 	encrypType := srv.Query("encrypt_type")
