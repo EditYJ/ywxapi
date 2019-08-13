@@ -58,6 +58,7 @@ func (srv *Server) Serve() error {
 		return err
 	}
 
+	// 利用用户
 	srv.buildResponse(response)
 	return nil
 }
@@ -138,6 +139,11 @@ func (srv *Server) SetMessageHandler(handler func(message.MixMessage) *message.R
 	srv.messageHandler = handler
 }
 
+// 接受[message.Reply]给这个回复消息加上：
+// 1. 微信服务器发来的[FromUserName]，[ToUserName]
+// 2. 利用[message.Reply]中的类型给回复消息设置类型
+// 3. 设置[SetCreateTime]标记创建时间
+//
 func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 	defer func() {
 		if e:=recover(); e!=nil{
@@ -150,6 +156,7 @@ func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 		return nil
 	}
 
+	// 取出消息类型
 	// 根据不一样的消息类型做出不一样的处理
 	msgType := reply.MsgType
 	switch msgType {
@@ -167,20 +174,30 @@ func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 
 	// 因为不知道[reply.MsgData]的类型，所以需要判断[reply.MsgData]类型
 	//
-	// reflect.ValueOf示例:
-	// var x int = 1
-	// fmt.Println("value: ", reflect.ValueOf(x))
-	// value:  <int Value>
+	// 一个 reflect.Value 可以装载任意类型的值. 函数[reflect.ValueOf]接受任意的 interface{} 类型,
+	// 并返回一个装载着其动态值的[reflect.Value]. [reflect.Value]持有一个接口值.
+	// 举例：
+	// v := reflect.ValueOf(3) // a reflect.Value
+	// fmt.Println(v)          // "3"
+	// fmt.Printf("%v\n", v)   // "3"
+	// fmt.Println(v.String()) // NOTE: "<int Value>"
 	msgData := reply.MsgData
 	value := reflect.ValueOf(msgData)
-	// 取出类型，规定类型必须为“ptr”(指针类型)
+
+	// 取出类型，规定类型必须为“ptr”(引用类型)
+	//
+	// 这里的[kind]只关心数据的底层实现，所以kinds类型是有限的
+	// 大概有下面几种：
+	// Bool, String 和 所有数字类型的基础类型; Array 和 Struct 对应的聚合类型;
+	// Chan, Func, Ptr, Slice, 和 Map 对应的引用类型; interface 类型;
+	// 还有表示空值的 Invalid 类型. (空的 reflect.Value 的 kind 即为 Invalid.)
 	kind := value.Kind().String()
 	if 0 != strings.Compare("ptr", kind){
 		return message.ErrUnsupportReply
 	}
 
-	// 因为不知道reply.MsgData的具体类型(其实这个类型我们可以断定它是[CommonToken]的组合对象)所以需要
-	// 反射调用[reply.MsgData]下的[SetToUserName],[SetFromUserName],[SetMsgType],[SetCreateTime]方法
+	// 因为不知道reply.MsgData的具体类型(其实这个类型我们可以断定它是[message.CommonToken]的组合对象)
+	// 所以需要反射调用[reply.MsgData]下的[SetToUserName],[SetFromUserName],[SetMsgType],[SetCreateTime]方法
 	params := make([]reflect.Value, 1)
 	params[0] = reflect.ValueOf(srv.requestMsg.FromUserName)
 	value.MethodByName("SetToUserName").Call(params)
