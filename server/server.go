@@ -58,7 +58,7 @@ func (srv *Server) Serve() error {
 		return err
 	}
 
-	// 利用用户
+	// 配置回复消息的额外内容
 	srv.buildResponse(response)
 	return nil
 }
@@ -213,5 +213,15 @@ func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 
 	srv.responseMsg = msgData
 	srv.responseRawXMLMsg, err = xml.Marshal(msgData)
+	return
+}
+
+// 自定义发送消息
+func (srv *Server) Send() (err error) {
+	replyMsg := srv.responseMsg
+	if srv.isSafeMode{
+		// TODO 安全模式下需要对消息进行加密
+	}
+	srv.XML(replyMsg)
 	return
 }
