@@ -2,6 +2,7 @@ package context
 
 import (
 	"encoding/xml"
+	"fmt"
 	"net/http"
 )
 
@@ -29,6 +30,7 @@ func (ctx *Context) XML(obj interface{})  {
 
 // 传入字节信息写入输入流发送至微信服务器
 func (ctx *Context) Render(bytes []byte) {
+	fmt.Printf("回复的消息==>%s", bytes)
 	ctx.Writer.WriteHeader(200)
 	_,err :=ctx.Writer.Write(bytes)
 	if err != nil{
