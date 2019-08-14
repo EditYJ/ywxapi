@@ -14,10 +14,10 @@ const (
 	MsgTypeImage              = "image"                     // 图片消息
 	MsgTypeVoice              = "voice"                     // 音频消息
 	MsgTypeVideo              = "video"                     // 视频消息
-	MsgTypeShortVideo         = "shortvideo"                // 短视频消息[限接收=用户->微信服务]
+	MsgTypeShortVideo         = "shortvideo"                // 短视频消息[限接收]
 	MsgTypeLocation           = "location"                  // 坐标消息/位置信息[限接收]
 	MsgTypeLink               = "link"                      // 链接消息[限接收]
-	MsgTypeMusic              = "music"                     // 音乐消息[限回复=微信服务->用户]
+	MsgTypeMusic              = "music"                     // 音乐消息[限回复]
 	MsgTypeNews               = "news"                      // 图文消息[限回复]
 	MsgTypeTransfer           = "transfer_customer_service" // 消息转发到客服
 )
