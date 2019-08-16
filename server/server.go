@@ -15,16 +15,16 @@ import (
 type Server struct {
 	*context.Context
 
-	openID         string
-	messageHandler func(message.MixMessage) *message.Reply
+	openID         string                                  // 发送方帐号[FromUserName]
+	messageHandler func(message.MixMessage) *message.Reply // 用户定义的消息处理函数(根据微信发来的消息做出相应的消息生成)
 
-	requestRawXMLMsg []byte
-	requestMsg       message.MixMessage
+	requestRawXMLMsg []byte             //微信服务器的请求消息字节信息
+	requestMsg       message.MixMessage // 请求的字节消息转换后的结构对象
 
-	responseRawXMLMsg []byte
-	responseMsg       interface{}
+	responseRawXMLMsg []byte      //响应消息的字节信息
+	responseMsg       interface{} //响应的字节消息转换后的结构对象
 
-	isSafeMode bool
+	isSafeMode bool //是否为安全加密模式
 	random     []byte
 	nonce      string
 	timestamp  int64
@@ -135,7 +135,7 @@ func (srv *Server) parseRequestMessage(rawXMLMsgBytes []byte) (msg message.MixMe
 }
 
 // 设置用户自定义的回调方法
-func (srv *Server) SetMessageHandler(handler func(message.MixMessage) *message.Reply)  {
+func (srv *Server) SetMessageHandler(handler func(message.MixMessage) *message.Reply) {
 	srv.messageHandler = handler
 }
 
@@ -146,12 +146,12 @@ func (srv *Server) SetMessageHandler(handler func(message.MixMessage) *message.R
 //
 func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 	defer func() {
-		if e:=recover(); e!=nil{
+		if e := recover(); e != nil {
 			err = fmt.Errorf("panic error: %v", err)
 		}
 	}()
 
-	if reply == nil{
+	if reply == nil {
 		// TODO 生成的回复消息如果为空，处理一下
 		return nil
 	}
@@ -192,7 +192,7 @@ func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 	// Chan, Func, Ptr, Slice, 和 Map 对应的引用类型; interface 类型;
 	// 还有表示空值的 Invalid 类型. (空的 reflect.Value 的 kind 即为 Invalid.)
 	kind := value.Kind().String()
-	if 0 != strings.Compare("ptr", kind){
+	if 0 != strings.Compare("ptr", kind) {
 		return message.ErrUnsupportReply
 	}
 
@@ -219,7 +219,7 @@ func (srv *Server) buildResponse(reply *message.Reply) (err error) {
 // 自定义发送消息
 func (srv *Server) Send() (err error) {
 	replyMsg := srv.responseMsg
-	if srv.isSafeMode{
+	if srv.isSafeMode {
 		// TODO 安全模式下需要对消息进行加密
 	}
 	srv.XML(replyMsg)

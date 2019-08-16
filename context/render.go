@@ -38,8 +38,9 @@ func (ctx *Context) Render(bytes []byte) {
 	}
 }
 
+//更改消息头，标明消息格式
 func writeContextType(w http.ResponseWriter, value []string) {
-	header := w.Header()
+	header := w.Header()	// Header 结构为 type Header map[string][]string
 	if val:= header["Content-Type"]; len(val)==0{
 		header["Content-Type"] = value
 	}
